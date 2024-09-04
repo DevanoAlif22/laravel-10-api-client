@@ -1,0 +1,12 @@
+logika check sessionlogin :
+1. jika tidak ada token maka ditendang ke login
+2. jika ada token tapi sudah habis maka ditendang ke login
+
+logika check sessionNotlogin :
+1. jika ada token an belum habis maka ditendang maka ditendang ke dashboard
+
+
+
+
+
+

@@ -1,0 +1,2 @@
+1. integrasi dengan laravel-10-sanctum (untuk API)
+2. integrasi juga dengan ajax yang disambungkan controller
