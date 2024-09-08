@@ -33,6 +33,14 @@
                             <label for="exampleFormControlTextarea1" class="form-label">Description</label>
                             <textarea class="form-control description" name="description" id="editDescription exampleFormControlTextarea1" rows="3"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label for="formFile" class="form-label">Image (Opsional)</label>
+                            <input class="form-control" name="image" type="file" id="formFile">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormImage" class="form-label">Image existing</label>
+                            <img class="form-control editImage" style="width: 100px;" src="" name="image" id="exampleFormImage"></img>
+                        </div>
                         <button type="button" class="btn btn-primary" id="btnEdit">Update Product</button>
                     </form>
                 </div>
@@ -60,7 +68,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-                            <textarea disabled class="form-control description" name="description" id="e exampleFormControlTextarea1" rows="3"></textarea>
+                            <textarea disabled class="form-control description" name="description" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormImage2" class="form-label">Image Existing</label>
+                            <img class="form-control image" style="width: 100px" src="" name="image" id="exampleFormImage2"></img>
                         </div>
                     </form>
                 </div>
@@ -82,6 +94,10 @@
                     <label for="exampleFormControlTextarea1" class="form-label">Description</label>
                     <textarea class="form-control description" name="description" id="exampleFormControlTextarea1" rows="3"></textarea>
                 </div>
+                <div class="mb-3">
+                    <label for="formFile" class="form-label">Image</label>
+                    <input class="form-control" name="image" type="file" id="formFile">
+                </div>
                 <button type="button" class="btn btn-primary" id="btnSubmit">Add Product</button>
             </form>
         @endif
@@ -98,6 +114,7 @@
                     <th>Name</th>
                     <th>Price</th>
                     <th>Description</th>
+                    <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -107,10 +124,17 @@
                         <td>{{ $item['name'] }}</td>
                         <td>{{ $item['price'] }}</td>
                         <td>{{ $item['description'] }}</td>
+                        <td><img style="width: 100px;"
+                        @if ($item['image']  != null)
+                                src="http://127.0.0.1:8000/{{$item['image']}}"
+                        @else
+                                src="https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg"
+                        @endif
+                                alt=""></td>
                         <td><div class="d-flex">
-                            <button data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}"  data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn btn-primary detailBtn">Detail</button>
+                            <button data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}" data-image="{{$item['image']}}"  data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn btn-primary detailBtn">Detail</button>
                             @if (session('role_id') == '1')
-                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}" class="btn btn-warning editBtn">Edit</button>
+                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}" data-image="{{$item['image']}}" class="btn btn-warning editBtn">Edit</button>
                                 <button class="btn btn-danger delete-btn" data-id="{{$item['id']}}">Delete</button>
                             @endif
                         </div></td>
@@ -136,24 +160,28 @@
                 $.ajax({
                     url: '{{ route("product.store") }}',
                     method: 'POST',
+                    data: formData,
                     processData: false,
                     contentType: false,
-                    data: formData,
                     success: function(response) {
                         $('.dangerAlert').hide();
                         $('.successAlert').html(response.success).show();
 
-
+                        var imageUrl = response.data.image ? `${response.data.image}` : 'https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg';
+                        var imageUrl2 = response.data.image ? `http://127.0.0.1:8000/${response.data.image}` : 'https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg';
                         var newRow = `
                             <tr>
                                 <td>${response.data.name}</td>
                                 <td>${response.data.price}</td>
                                 <td>${response.data.description}</td>
                                 <td>
+                                    <img style="width: 100px;" src="${imageUrl2}" alt="">
+                                </td>
+                                <td>
                                     <div class="d-flex">
-                                        <button data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}"  data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn btn-primary detailBtn">Detail</button>
+                                        <button data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}" data-image="${imageUrl}"  data-bs-toggle="modal" data-bs-target="#exampleModal2" class="btn btn-primary detailBtn">Detail</button>
                                         @if (session('role_id') == '1')
-                                            <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}" class="btn btn-warning editBtn">Edit</button>
+                                            <button data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{$item['id']}}" data-name="{{$item['name']}}" data-price="{{$item['price']}}" data-description="{{$item['description']}}" data-image="${imageUrl}" class="btn btn-warning editBtn">Edit</button>
                                             <button class="btn btn-danger delete-btn" data-id="{{$item['id']}}">Delete</button>
                                         @endif
                                     </div>
@@ -182,12 +210,20 @@
                 var name = $(this).data('name');
                 var price = $(this).data('price');
                 var description = $(this).data('description');
+                var image = $(this).data('image');
 
                 // Set data in modal input
                 $('#formEdit input[name="name"]').val(name);
                 $('#formEdit input[name="price"]').val(price);
                 $('#formEdit textarea[name="description"]').val(description);
                 $('#formEdit').data('id', id);
+
+                // Set the image src in the detail modal
+                if (image) {
+                    $('#exampleFormImage').attr('src', 'http://127.0.0.1:8000/' + image);
+                } else {
+                    $('#exampleFormImage').attr('src', 'https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg');
+                }
             });
 
             $(document).on('click', '.detailBtn', function() {
@@ -195,12 +231,20 @@
                 var name = $(this).data('name');
                 var price = $(this).data('price');
                 var description = $(this).data('description');
+                var image = $(this).data('image');
 
                 // Set data in modal input
                 $('#formDetail input[name="name"]').val(name);
                 $('#formDetail input[name="price"]').val(price);
                 $('#formDetail textarea[name="description"]').val(description);
                 $('#formDetail').data('id', id);
+
+                // Set the image src in the detail modal
+                if (image) {
+                    $('#exampleFormImage2').attr('src', 'http://127.0.0.1:8000/' + image);
+                } else {
+                    $('#exampleFormImage2').attr('src', 'https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg');
+                }
             });
 
             $(document).on('click', '.delete-btn', function() {
@@ -237,39 +281,56 @@
 
             // Handle update form submission
             $('#formEdit button[type="button"]').click(function() {
-                var id = $('#formEdit').data('id');
-                var name = $('#formEdit input[name="name"]').val();
-                var price = $('#formEdit input[name="price"]').val();
-                var description = $('#formEdit input[name="description"]').val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
 
+                var id = $('#formEdit').data('id');
+                // var name = $('#formEdit input[name="name"]').val();
+                // var price = $('#formEdit input[name="price"]').val();
+                // var description = $('#formEdit input[name="description"]').val();
+
+                var form = $('#formEdit')[0];
+                var formData = new FormData(form);
                 $.ajax({
                     url: '{{ route("product.update", ":id") }}'.replace(':id', id),
                     method: 'POST',
-                    data: {
-                        name: name,
-                        price: price,
-                        description: description
-                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         $('.successEditAlert').html(response.success).show();
                         $('#editName').html(response.data.name);
                         $('#editPrice').html(response.data.price);
                         $('#editDescription').html(response.data.description);
 
+                        if(response.data.image != null){
+                            $('#exampleFormImage').attr('src', 'http://127.0.0.1:8000/' + response.data.image);
+                        }
 
+                        // Update row in table
                         var row = $(`tr[data-id="${response.data.id}"]`);
                         row.find('td').eq(0).text(response.data.name);
                         row.find('td').eq(1).text(response.data.price);
                         row.find('td').eq(2).text(response.data.description);
 
+                        // Update image
+                        var imageUrl = response.data.image ? `${response.data.image}` : 'https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg';
+                        var imageUrl2 = response.data.image ? `http://127.0.0.1:8000/${response.data.image}` : 'https://i.pinimg.com/474x/9b/47/a0/9b47a023caf29f113237d61170f34ad9.jpg';
+                        row.find('td').eq(3).find('img').attr('src', imageUrl2);
+
                         // Update attributes for Edit and Detail buttons
                         row.find('.editBtn').data('name', response.data.name);
                         row.find('.editBtn').data('price', response.data.price);
                         row.find('.editBtn').data('description', response.data.description);
+                        row.find('.editBtn').data('image', imageUrl);
 
                         row.find('.detailBtn').data('name', response.data.name);
                         row.find('.detailBtn').data('price', response.data.price);
                         row.find('.detailBtn').data('description', response.data.description);
+                        row.find('.detailBtn').data('image', imageUrl);
 
                         setTimeout(function() {
                             $('.successEditAlert').hide();
